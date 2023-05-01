@@ -73,6 +73,11 @@ class MainActivity : AppCompatActivity() {
 
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
+                webView.loadUrl(
+                    "javascript:document.getElementsByName('viewport')[0].setAttribute('content', " +
+                            "'width=device-width,initial-scale=1.0,maximum-scale=10.0,user-scalable=yes');",
+                )
+
                 //Make Enable or Disable buttons
                 view?.canGoBack()?.let {
                     btnBack.isEnabled = it
