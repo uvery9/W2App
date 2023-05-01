@@ -1,5 +1,6 @@
 package top.easy2use.web2app
 
+import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.graphics.Bitmap
 import android.net.Uri
@@ -14,6 +15,10 @@ import android.webkit.WebViewClient
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
     private lateinit var btnBack: ImageButton
@@ -25,10 +30,17 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         initWebView()
         initButtonsAndClicks()
-        webView.loadUrl("https://www.baidu.com/")
+
+        lifecycleScope.launch {
+            val website =
+                WebUtils.getWebSite("https://www.google.com/", "https://www.baidu.com/", 460)
+            Log.d("WebUtils", "Website: $website")
+            webView.loadUrl(website)
+        }
 
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     private fun initWebView() {
         webView = findViewById<WebView>(R.id.webView).apply {
             canGoBack()

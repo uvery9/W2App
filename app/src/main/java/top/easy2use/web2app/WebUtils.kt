@@ -1,5 +1,13 @@
 package top.easy2use.web2app
 
+import android.util.Log
+import android.webkit.URLUtil
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.net.HttpURLConnection
+import java.net.InetAddress
+import java.net.URL
+
 object WebUtils {
 
     /*
@@ -166,5 +174,30 @@ object WebUtils {
         }
     }
      */
+    suspend fun getWebSite(primary: String, backup: String, timeout: Int = 460): String {
+        return if (isInternetAvailableSuspend(primary, timeout)) return primary
+        else backup
+    }
 
+    private fun isInternetReachable(urlStr: String?, timeout: Int = 460): Boolean {
+        return try {
+            /*val urlConnection = URL(urlStr).openConnection() as HttpURLConnection
+                urlConnection.instanceFollowRedirects = true
+                val openWebsite = urlConnection.content */
+            if (!URLUtil.isValidUrl(urlStr)) return false
+            val connection = URL(urlStr).openConnection() as HttpURLConnection
+            connection.connectTimeout = timeout
+            val code: Int = connection.responseCode
+            code == 200
+        } catch (e: Exception) {
+            Log.e("WebUtils", "isInternetReachable exception occurs: $e")
+            false
+        }
+    }
+
+    private suspend fun isInternetAvailableSuspend(urlStr: String?, timeout: Int): Boolean {
+        return withContext(Dispatchers.IO) {
+            return@withContext isInternetReachable(urlStr, timeout)
+        }
+    }
 }
