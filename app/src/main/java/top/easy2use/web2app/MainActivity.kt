@@ -46,7 +46,25 @@ class MainActivity : AppCompatActivity() {
             canGoBack()
             canGoForward()
         }
-        webView.settings.javaScriptEnabled = true
+        webView.setInitialScale(100)
+        webView.settings.apply {
+
+            // support zoom
+            // https://blog.csdn.net/m0_47708317/article/details/126240210
+            setSupportZoom(true)
+            builtInZoomControls = true
+            displayZoomControls = false
+            useWideViewPort = true
+
+
+            javaScriptEnabled = true
+            domStorageEnabled = true
+            // setAppCacheEnabled(true);
+            cacheMode = WebSettings.LOAD_DEFAULT
+        }
+        webView.scrollBarStyle = View.SCROLLBARS_INSIDE_OVERLAY
+
+
         webView.webViewClient = object : WebViewClient() {
             override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                 super.onPageStarted(view, url, favicon)
@@ -71,8 +89,12 @@ class MainActivity : AppCompatActivity() {
                 description: String?,
                 failingUrl: String?
             ) {
-                super.onReceivedError(view, errorCode, description, failingUrl)
+                Log.w(
+                    "WebUtils",
+                    "onReceivedError: [errCode=$errorCode]$description, failingUrl=$failingUrl"
+                )
                 Toast.makeText(view?.context, description, Toast.LENGTH_LONG).show()
+                super.onReceivedError(view, errorCode, description, failingUrl)
             }
 
             /*override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
@@ -125,10 +147,6 @@ class MainActivity : AppCompatActivity() {
             }*/
         }
 
-        webView.scrollBarStyle = View.SCROLLBARS_INSIDE_OVERLAY
-        webView.settings.domStorageEnabled = true
-//        webView.settings.setAppCacheEnabled(true);
-        webView.settings.cacheMode = WebSettings.LOAD_DEFAULT
     }
 
     private fun initButtonsAndClicks() {
